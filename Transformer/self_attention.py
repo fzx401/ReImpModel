@@ -16,7 +16,7 @@ class SelfAttention(nn.Module):
         query = self.W_query(input_x)
         key = self.W_key(input_x)
         value = self.W_value(input_x)
-        softmax = nn.Softmax(dim=1)
+        softmax = nn.Softmax(dim=2)
         attention_weight = softmax(
             torch.matmul(query, torch.transpose(key, -1, -2))
         )
@@ -24,10 +24,12 @@ class SelfAttention(nn.Module):
         return weighted_sum, attention_weight
 
 
-input_dim = 128
+input_dim = 8
 batch_size = 16
-seq_legenth = 10
+seq_legenth = 2
 
-x_input = torch.randn(batch_size, seq_legenth, input_dim, device=device)
+
+x_input = torch.tensor([[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0], [4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0]], device=device)
+x_input = torch.unsqueeze(x_input, dim=0)
 self_attention = SelfAttention(input_dim)
-print(self_attention(x_input)[1][0].data)
+print(self_attention(x_input)[1].cpu().detach().numpy().reshape((2, 2)))
